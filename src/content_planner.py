@@ -15,7 +15,10 @@ except ImportError:
 
 def generate_instagram_content_series():
     # Load character data
-    char_path = os.path.join(os.path.dirname(__file__), "../../characters/Kai.json")
+    # Get the directory of the current script (src)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # Go up one level to the project root and into characters
+    char_path = os.path.join(current_dir, "..", "characters", "Kai.json")
     with open(char_path, "r", encoding="utf-8") as f:
         character_data = json.load(f)
 
@@ -98,7 +101,8 @@ if __name__ == "__main__":
     content_data = json.loads(content_series_json)
     
     # Ensure output directory exists
-    output_dir = os.path.join(os.path.dirname(__file__), "../../output")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    output_dir = os.path.join(current_dir, "..", "output")
     os.makedirs(output_dir, exist_ok=True)
     
     # Create a filename based on the series title
