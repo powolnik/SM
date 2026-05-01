@@ -1,5 +1,6 @@
 import os
 import json
+import hashlib
 
 class PlanStore:
     def __init__(self, character_dir):
@@ -19,7 +20,21 @@ class PlanStore:
                     continue
         return plans
 
+    def get_plan_fingerprint(self, plan):
+        title = plan.get("series_title", "").lower().strip()
+        audience = plan.get("target_audience", "").lower().strip()
+        
+        # Create a fingerprint from key plan elements
+        fingerprint_data = f"{title}|{audience}"
+        return hashlib.md5(fingerprint_data.encode('utf-8')).hexdigest()
+        
     def save_plan(self, plan):
+        # Check for duplicate plans based on fingerprint
+        new_fingerprint = self.get_plan_fingerprint(plan)
+        for existing in self.load_all_plans():
+            if self.get_plan_fingerprint(existing) == new_fingerprint:
+                raise ValueError("A plan with this intent already exists.")
+                
         safe_title = "".join(c if c.isalnum() else "_" for c in plan.get("series_title", "plan")).strip("_")
         file_path = os.path.join(self.plans_dir, f"{safe_title or 'plan'}.json")
         with open(file_path, "w", encoding='utf-8') as f:

@@ -20,7 +20,7 @@ Existing series history (do not repeat these themes or specific post ideas):
 {plans_context}
 
 CRITICAL: You must choose a NEW, unique theme for this series that is 
-distinct from the existing titles and content listed above.
+distinct from the existing titles, target audiences, and content listed above.
 
 You are a senior Instagram content strategist and image prompt engineer.
 Return ONLY valid JSON with this schema:
