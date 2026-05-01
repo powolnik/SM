@@ -2,6 +2,6 @@
 aider*
 .env
 env/*
-project-context/*
 src/content/__pycache__/*
-# characters/kai/plans/*
+project-context/*
+characters/kai/plans/*
