@@ -106,7 +106,7 @@ if __name__ == "__main__":
     
     # Ensure output directory exists
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    output_dir = os.path.join(current_dir, "..", "output")
+    output_dir = os.path.join(current_dir, "..", "characters", "kai")
     os.makedirs(output_dir, exist_ok=True)
     
     # Create a filename based on the series title
