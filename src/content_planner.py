@@ -106,24 +106,3 @@ Hard constraints:
     return response.choices[0].message.content
 
 
-if __name__ == "__main__":
-    content_series_json = generate_instagram_content_series()
-    
-    # Clean up potential markdown formatting
-    cleaned_json = content_series_json.replace("```json", "").replace("```", "").strip()
-    
-    content_data = json.loads(cleaned_json)
-    
-    # Ensure output directory exists
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    output_dir = os.path.join(current_dir, "..", "..", "characters", "kai", "plans")
-    os.makedirs(output_dir, exist_ok=True)
-    
-    # Create a filename based on the series title
-    safe_title = "".join([c if c.isalnum() else "_" for c in content_data.get("series_title", "content_plan")])
-    file_path = os.path.join(output_dir, f"{safe_title}.json")
-    
-    with open(file_path, "w", encoding="utf-8") as f:
-        json.dump(content_data, f, indent=2, ensure_ascii=False)
-        
-    print(f"Content plan saved to: {file_path}")
