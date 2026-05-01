@@ -5,3 +5,4 @@ env/*
 src/content/__pycache__/*
 project-context/*
 characters/kai/plans/*
+browser_data/
