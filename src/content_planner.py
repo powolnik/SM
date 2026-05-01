@@ -1,7 +1,13 @@
 
 import json
 import os
-from openai import OpenAI
+try:
+    from openai import OpenAI
+except ImportError:
+    raise ImportError(
+        "The 'openai' package is not installed. Please install it using:\n"
+        "pip install openai"
+    )
 
 
 def generate_instagram_content_series():
