@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 
 try:
-    from plan_repository import list_series_titles
+    from plan_repository import list_series_titles, get_all_existing_plans
 except Exception as e:
     raise
 try:
@@ -30,9 +30,11 @@ def generate_instagram_content_series():
     with open(char_path, "r", encoding="utf-8") as f:
         character_data = json.load(f)
 
-    # Get existing titles to avoid duplicates
-    existing_titles = list_series_titles(plans_dir)
+    # Get existing plans to avoid duplicates
+    existing_plans = get_all_existing_plans(plans_dir)
+    existing_titles = [p.get("series_title", "Unknown") for p in existing_plans]
     titles_str = ", ".join(existing_titles) if existing_titles else "None"
+    plans_context = json.dumps(existing_plans, indent=2) if existing_plans else "None"
 
     # Prepare prompt
     prompt = f"""
@@ -41,8 +43,11 @@ Based on the character profile below, create an Instagram content series.
 Character profile:
 {json.dumps(character_data, indent=2, ensure_ascii=False)}
 
-Existing series titles to avoid (do not repeat these themes):
-{titles_str}
+Existing series history (do not repeat these themes or specific post ideas):
+{plans_context}
+
+CRITICAL: You must choose a NEW, unique theme for this series that is 
+distinct from the existing titles and content listed above.
 
 You are a senior Instagram content strategist and image prompt engineer.
 Return ONLY valid JSON with this schema:
@@ -119,10 +124,32 @@ Hard constraints:
     return response.choices[0].message.content
 
 
+def save_content_plan(content_series_json):
+    cleaned_json = content_series_json.replace("```json", "").replace("```", "").strip()
+    content_data = json.loads(cleaned_json)
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    output_dir = os.path.join(current_dir, "..", "..", "characters", "kai", "plans")
+    os.makedirs(output_dir, exist_ok=True)
+
+    safe_title = "".join(
+        c if c.isalnum() else "_" for c in content_data.get("series_title", "content_plan")
+    ).strip("_")
+    if not safe_title:
+        safe_title = "content_plan"
+
+    file_path = os.path.join(output_dir, f"{safe_title}.json")
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(content_data, f, indent=2, ensure_ascii=False)
+
+    return file_path
+
+
 if __name__ == "__main__":
     try:
         content = generate_instagram_content_series()
-        print(content)
+        saved_path = save_content_plan(content)
+        print(f"Content plan saved to: {saved_path}")
     except Exception as e:
         if "401" in str(e) and "User not found" in str(e):
             print("Authentication failed: OPENROUTER_API_KEY is invalid for OpenRouter.")
