@@ -4,3 +4,4 @@ aider*
 env/*
 project-context/*
 src/content/__pycache__/*
+characters/kai/plans/*
