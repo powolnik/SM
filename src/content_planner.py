@@ -18,7 +18,7 @@ def generate_instagram_content_series():
     # Get the directory of the current script (src)
     current_dir = os.path.dirname(os.path.abspath(__file__))
     # Go up one level to the project root and into characters
-    char_path = os.path.join(current_dir, "..", "characters", "Kai.json")
+    char_path = os.path.join(current_dir, "..", "characters", "kai", "Kai.json")
     with open(char_path, "r", encoding="utf-8") as f:
         character_data = json.load(f)
 
@@ -98,7 +98,11 @@ Hard constraints:
 
 if __name__ == "__main__":
     content_series_json = generate_instagram_content_series()
-    content_data = json.loads(content_series_json)
+    
+    # Clean up potential markdown formatting
+    cleaned_json = content_series_json.replace("```json", "").replace("```", "").strip()
+    
+    content_data = json.loads(cleaned_json)
     
     # Ensure output directory exists
     current_dir = os.path.dirname(os.path.abspath(__file__))
