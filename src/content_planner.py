@@ -1,6 +1,7 @@
 
 import json
 import os
+from content_repository import get_existing_series_titles
 try:
     from openai import OpenAI
 except ImportError:
@@ -19,8 +20,14 @@ def generate_instagram_content_series():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     # Go up one level to the project root and into characters
     char_path = os.path.join(current_dir, "..", "characters", "kai", "Kai.json")
+    plans_dir = os.path.join(current_dir, "..", "characters", "kai", "plans")
+    
     with open(char_path, "r", encoding="utf-8") as f:
         character_data = json.load(f)
+
+    # Get existing titles to avoid duplicates
+    existing_titles = get_existing_series_titles(plans_dir)
+    titles_str = ", ".join(existing_titles) if existing_titles else "None"
 
     # Prepare prompt
     prompt = f"""
@@ -28,6 +35,9 @@ Based on the character profile below, create an Instagram content series.
 
 Character profile:
 {json.dumps(character_data, indent=2, ensure_ascii=False)}
+
+Existing series titles to avoid (do not repeat these themes):
+{titles_str}
 
 You are a senior Instagram content strategist and image prompt engineer.
 Return ONLY valid JSON with this schema:
