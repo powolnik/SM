@@ -1,7 +1,7 @@
-
+# if i run this file now, whats going to happen AI?
 import json
 import os
-from .content_repository import get_existing_series_titles
+from plan_repository import list_series_titles
 try:
     from openai import OpenAI
 except ImportError:
@@ -26,7 +26,7 @@ def generate_instagram_content_series():
         character_data = json.load(f)
 
     # Get existing titles to avoid duplicates
-    existing_titles = get_existing_series_titles(plans_dir)
+    existing_titles = list_series_titles(plans_dir)
     titles_str = ", ".join(existing_titles) if existing_titles else "None"
 
     # Prepare prompt
@@ -90,7 +90,7 @@ Hard constraints:
         api_key=os.environ.get("OPENROUTER_API_KEY")
     )
     response = client.chat.completions.create(
-        model="openai/gpt-3.5-turbo",
+        model="openai/gpt-4o",
         messages=[
             {
                 "role": "system",
@@ -104,5 +104,13 @@ Hard constraints:
     )
 
     return response.choices[0].message.content
+
+
+if __name__ == "__main__":
+    try:
+        content = generate_instagram_content_series()
+        print(content)
+    except Exception as e:
+        print(f"Error generating content: {e}")
 
 
