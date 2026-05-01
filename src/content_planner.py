@@ -4,7 +4,7 @@ import os
 from openai import OpenAI
 
 
-def generate_instagram_ideas():
+def generate_instagram_content_series():
     # Load character data
     char_path = os.path.join(os.path.dirname(__file__), "../../characters/Kai.json")
     with open(char_path, "r", encoding="utf-8") as f:
@@ -85,5 +85,5 @@ Hard constraints:
 
 
 if __name__ == "__main__":
-    ideas = generate_instagram_ideas()
-    print(ideas)
+    content_series = generate_instagram_content_series()
+    print(content_series)
