@@ -1,7 +1,7 @@
 import os
 import json
 
-def get_existing_series_titles(plans_dir):
+def list_series_titles(plans_dir):
     titles = []
     if not os.path.exists(plans_dir):
         return titles

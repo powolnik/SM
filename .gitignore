@@ -3,3 +3,4 @@ aider*
 .env
 env/*
 project-context/*
+src/content/__pycache__/*

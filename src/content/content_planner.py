@@ -1,7 +1,12 @@
-# if i run this file now, whats going to happen AI?
 import json
 import os
-from plan_repository import list_series_titles
+from dotenv import load_dotenv
+
+
+try:
+    from plan_repository import list_series_titles
+except Exception as e:
+    raise
 try:
     from openai import OpenAI
 except ImportError:
@@ -21,7 +26,7 @@ def generate_instagram_content_series():
     # Go up two levels to the project root and into characters
     char_path = os.path.join(current_dir, "..", "..", "characters", "kai", "Kai.json")
     plans_dir = os.path.join(current_dir, "..", "..", "characters", "kai", "plans")
-    
+
     with open(char_path, "r", encoding="utf-8") as f:
         character_data = json.load(f)
 
@@ -83,11 +88,19 @@ Hard constraints:
 - No placeholders like [insert...].
 - Return JSON only.
 """
-
+    load_dotenv(override=True)
     # Call AI model
+    api_key_raw = os.getenv("OPENROUTER_API_KEY")
+    api_key = api_key_raw.strip() if isinstance(api_key_raw, str) else api_key_raw
+    if not api_key:
+        raise ValueError("Missing OPENROUTER_API_KEY environment variable.")
+    if not api_key.startswith("sk-or-"):
+        raise ValueError(
+            "OPENROUTER_API_KEY does not look like a valid OpenRouter key (expected prefix 'sk-or-')."
+        )
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
-        api_key=os.environ.get("OPENROUTER_API_KEY")
+        api_key=api_key
     )
     response = client.chat.completions.create(
         model="openai/gpt-4o",
@@ -111,6 +124,10 @@ if __name__ == "__main__":
         content = generate_instagram_content_series()
         print(content)
     except Exception as e:
+        if "401" in str(e) and "User not found" in str(e):
+            print("Authentication failed: OPENROUTER_API_KEY is invalid for OpenRouter.")
+            print("Set a valid OpenRouter key (starts with 'sk-or-') and run again.")
+            raise
         print(f"Error generating content: {e}")
 
 
