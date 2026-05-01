@@ -1,23 +1,29 @@
-import random
 
-# Lista przykładowych pomysłów
-IDEAS = [
-    "Inteligentny system zarządzania domem",
-    "Aplikacja do śledzenia nawyków",
-    "Generator losowych cytatów motywacyjnych",
-    "Platforma do nauki języków poprzez gry",
-    "Narzędzie do analizy wydatków osobistych",
-    "System rekomendacji książek based on mood",
-    "Ekologiczny kalkulator śladu węglowego",
-    "Wirtualny asystent planowania posiłków",
-    "Gra edukacyjna dla dzieci o kosmosie",
-    "Social media skupione na pozytywnych wiadomościach"
-]
+import json
+import os
+from openai import OpenAI
 
-def generate_idea() -> str:
-    """Generuje i zwraca losowy pomysł z listy"""
-    return random.choice(IDEAS)
+def generate_instagram_ideas():
+    # Load character data
+    char_path = os.path.join(os.path.dirname(__file__), '../../characters/Kai.json')
+    with open(char_path, 'r') as f:
+        character_data = json.load(f)
+
+    # Prepare prompt
+    prompt = f"Based on the following character profile, generate a series of Instagram post ideas:\n{json.dumps(character_data, indent=2)}"
+
+    # Call AI model
+    client = OpenAI()
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a creative Instagram content strategist."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    
+    return response.choices[0].message.content
 
 if __name__ == "__main__":
-    # Wyświetl losowy pomysł przy bezpośrednim uruchomieniu pliku
-    print(f"Twój dzisiejszy pomysł: {generate_idea()}")
+    ideas = generate_instagram_ideas()
+    print(ideas)
