@@ -1,7 +1,7 @@
 
 import json
 import os
-from content_repository import get_existing_series_titles
+from .content_repository import get_existing_series_titles
 try:
     from openai import OpenAI
 except ImportError:
@@ -16,11 +16,11 @@ except ImportError:
 
 def generate_instagram_content_series():
     # Load character data
-    # Get the directory of the current script (src)
+    # Get the directory of the current script (src/content)
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    # Go up one level to the project root and into characters
-    char_path = os.path.join(current_dir, "..", "characters", "kai", "Kai.json")
-    plans_dir = os.path.join(current_dir, "..", "characters", "kai", "plans")
+    # Go up two levels to the project root and into characters
+    char_path = os.path.join(current_dir, "..", "..", "characters", "kai", "Kai.json")
+    plans_dir = os.path.join(current_dir, "..", "..", "characters", "kai", "plans")
     
     with open(char_path, "r", encoding="utf-8") as f:
         character_data = json.load(f)
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     
     # Ensure output directory exists
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    output_dir = os.path.join(current_dir, "..", "characters", "kai", "plans")
+    output_dir = os.path.join(current_dir, "..", "..", "characters", "kai", "plans")
     os.makedirs(output_dir, exist_ok=True)
     
     # Create a filename based on the series title
