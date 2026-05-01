@@ -5,8 +5,11 @@ try:
     from openai import OpenAI
 except ImportError:
     raise ImportError(
-        "The 'openai' package is not installed. Please install it using:\n"
-        "pip install openai"
+        "The 'openai' package is not installed. Please install it using one of these commands:\n"
+        "pip install openai\n\n"
+        "If you have multiple Python versions, use:\n"
+        "python -m pip install openai\n\n"
+        "This ensures the package is installed for the Python interpreter you're using."
     )
 
 
