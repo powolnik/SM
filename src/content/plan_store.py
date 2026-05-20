@@ -1,8 +1,7 @@
 import os
 import json
-import time
+from datetime import datetime
 from src.utils.logger import debug_log
-
 
 class PlanStore:
     def __init__(self, character_dir):
@@ -21,6 +20,15 @@ class PlanStore:
                 except (json.JSONDecodeError, IOError):
                     continue
         return plans
+
+    def get_due_plans(self):
+        due_plans = {}
+        now = datetime.now().isoformat()
+        for filename, plan in self.load_all_plans().items():
+            scheduled_at = plan.get("scheduled_at")
+            if scheduled_at and scheduled_at <= now and plan.get("execution_status") == "confirmed":
+                due_plans[filename] = plan
+        return due_plans
 
     def get_plans_by_status(self, status):
         all_plans = self.load_all_plans()
