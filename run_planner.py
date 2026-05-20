@@ -7,7 +7,7 @@ import traceback
 def _debug_log(hypothesis_id, location, message, data):
     # #region agent log
     payload = {
-        "sessionId": "0a5624",
+        "sessionId": "95411c",
         "runId": "pre-fix",
         "hypothesisId": hypothesis_id,
         "location": location,
@@ -15,7 +15,7 @@ def _debug_log(hypothesis_id, location, message, data):
         "data": data,
         "timestamp": int(time.time() * 1000),
     }
-    with open("debug-0a5624.log", "a", encoding="utf-8") as _f:
+    with open("debug-95411c.log", "a", encoding="utf-8") as _f:
         _f.write(json.dumps(payload, ensure_ascii=False) + "\n")
     # #endregion
 
