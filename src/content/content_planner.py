@@ -5,15 +5,24 @@ from dotenv import load_dotenv
 try:
     from .plan_store import PlanStore
     from .plan_generator import PlanGenerator
+    from .content_executor import ContentExecutor
 except ImportError:
     from plan_store import PlanStore
     from plan_generator import PlanGenerator
+    from content_executor import ContentExecutor
+
+try:
+    from src.social.instagram_client import InstagramClient
+except ImportError:
+    import sys
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    from social.instagram_client import InstagramClient
 
 
 def _debug_log(hypothesis_id, location, message, data):
     # #region agent log
     payload = {
-        "sessionId": "0a5624",
+        "sessionId": "95411c",
         "runId": "pre-fix",
         "hypothesisId": hypothesis_id,
         "location": location,
@@ -21,9 +30,14 @@ def _debug_log(hypothesis_id, location, message, data):
         "data": data,
         "timestamp": int(time.time() * 1000),
     }
-    with open("debug-0a5624.log", "a", encoding="utf-8") as _f:
+    with open("debug-95411c.log", "a", encoding="utf-8") as _f:
         _f.write(json.dumps(payload, ensure_ascii=False) + "\n")
     # #endregion
+
+
+def _get_char_dir():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(current_dir, "..", "..", "characters", "kai")
 
 
 def run_planner():
@@ -35,15 +49,14 @@ def run_planner():
     if not api_key or not api_key.startswith("sk-or-"):
         raise ValueError("Invalid or missing OPENROUTER_API_KEY.")
     
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    char_dir = os.path.join(current_dir, "..", "..", "characters", "kai")
+    char_dir = _get_char_dir()
     
     with open(os.path.join(char_dir, "Kai.json"), "r", encoding="utf-8") as f:
         character_profile = json.load(f)
     _debug_log("H5", "content_planner.py:35", "character_profile_loaded", {"char_dir": char_dir, "keys": list(character_profile.keys()) if isinstance(character_profile, dict) else []})
 
     store = PlanStore(char_dir)
-    generator = PlanGenerator(api_key)
+    generator = PlanGenerator(api_key, store)
 
     try:
         existing_plans = store.load_all_plans()
@@ -61,7 +74,16 @@ def run_planner():
         print(f"Error generating content: {e}")
         raise
 
+
+def run_executor(plan_filename, dry_run=False):
+    load_dotenv(override=True)
+
+    char_dir = _get_char_dir()
+    store = PlanStore(char_dir)
+    ig = InstagramClient()
+    executor = ContentExecutor(store, ig)
+    executor.execute_plan(plan_filename, dry_run=dry_run)
+
+
 if __name__ == "__main__":
     run_planner()
-
-

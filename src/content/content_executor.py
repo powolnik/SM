@@ -1,0 +1,31 @@
+class ContentExecutor:
+    def __init__(self, plan_store, instagram_client):
+        self.plan_store = plan_store
+        self.ig = instagram_client
+
+    def execute_plan(self, filename, dry_run=False):
+        self.plan_store.update_plan_status(filename, "in_progress")
+        try:
+            plan = self.plan_store.load_plan(filename)
+            if dry_run:
+                print(f"--- DRY RUN: Executing {filename} ---")
+                for post in plan.get("posts", []):
+                    content = post.get("caption")
+                    if content:
+                        print(f"Would post: {content}")
+                print("--- DRY RUN COMPLETE ---")
+            else:
+                browser, page = self.ig.get_authenticated_page()
+                try:
+                    for post in plan.get("posts", []):
+                        content = post.get("caption")
+                        if content:
+                            self.ig.post_content(page, content)
+                finally:
+                    browser.close()
+                    self.ig.close()
+            self.plan_store.update_plan_status(filename, "completed")
+        except Exception as e:
+            # Revert to 'confirmed' or 'draft' so it can be retried
+            self.plan_store.update_plan_status(filename, "confirmed")
+            raise e
