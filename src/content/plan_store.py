@@ -48,3 +48,19 @@ class PlanStore:
         with open(file_path, "w", encoding='utf-8') as f:
             json.dump(plan, f, indent=2, ensure_ascii=False)
         return file_path
+
+    def get_plan_counts(self):
+        counts = {"pending": 0, "in_progress": 0, "completed": 0}
+        for filename in os.listdir(self.plans_dir):
+            if filename.endswith(".json"):
+                plan = self.load_plan(filename)
+                status = plan.get("execution_status", "pending")
+                counts[status] = counts.get(status, 0) + 1
+        return counts
+
+    def update_plan_status(self, filename, status):
+        path = os.path.join(self.plans_dir, filename)
+        plan = self.load_plan(filename)
+        plan["execution_status"] = status
+        with open(path, "w", encoding='utf-8') as f:
+            json.dump(plan, f, indent=2, ensure_ascii=False)

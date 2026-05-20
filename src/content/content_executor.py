@@ -4,12 +4,18 @@ class ContentExecutor:
         self.ig = instagram_client
 
     def execute_plan(self, filename):
-        plan = self.plan_store.load_plan(filename)
-        browser, page = self.ig.get_authenticated_page()
+        self.plan_store.update_plan_status(filename, "in_progress")
         try:
-            for step in plan.get("steps", []):
-                if step.get("platform") == "instagram":
-                    self.ig.post_content(page, step.get("content"))
-        finally:
-            browser.close()
-            self.ig.close()
+            plan = self.plan_store.load_plan(filename)
+            browser, page = self.ig.get_authenticated_page()
+            try:
+                for step in plan.get("steps", []):
+                    if step.get("platform") == "instagram":
+                        self.ig.post_content(page, step.get("content"))
+            finally:
+                browser.close()
+                self.ig.close()
+            self.plan_store.update_plan_status(filename, "completed")
+        except Exception as e:
+            self.plan_store.update_plan_status(filename, "pending")
+            raise e

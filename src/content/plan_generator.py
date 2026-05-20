@@ -20,8 +20,9 @@ def _debug_log(hypothesis_id, location, message, data):
 
 
 class PlanGenerator:
-    def __init__(self, api_key):
+    def __init__(self, api_key, plan_store):
         self.client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
+        self.plan_store = plan_store
 
     def create_new_plan(self, character_profile, existing_plans):
         existing_titles = [p.get("series_title", "Unknown") for p in existing_plans]
@@ -105,4 +106,6 @@ Hard constraints:
         _debug_log("H3", "plan_generator.py:105", "content_extracted", {"is_none": content is None, "content_len": len(content) if isinstance(content, str) else -1, "starts_with_fence": bool(isinstance(content, str) and content.strip().startswith("```"))})
         cleaned_json = content.replace("```json", "").replace("```", "").strip()
         _debug_log("H3", "plan_generator.py:107", "json_cleaned", {"cleaned_len": len(cleaned_json), "starts_with_brace": cleaned_json.startswith("{"), "ends_with_brace": cleaned_json.endswith("}")})
-        return json.loads(cleaned_json)
+        plan = json.loads(cleaned_json)
+        plan["execution_status"] = "pending"
+        return plan
