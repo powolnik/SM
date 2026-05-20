@@ -9,9 +9,12 @@ class ContentExecutor:
             plan = self.plan_store.load_plan(filename)
             browser, page = self.ig.get_authenticated_page()
             try:
-                for step in plan.get("steps", []):
-                    if step.get("platform") == "instagram":
-                        self.ig.post_content(page, step.get("content"))
+                # Changed 'steps' to 'posts' to match PlanGenerator output
+                for post in plan.get("posts", []):
+                    # Assuming content is in the 'caption' field for now
+                    content = post.get("caption")
+                    if content:
+                        self.ig.post_content(page, content)
             finally:
                 browser.close()
                 self.ig.close()

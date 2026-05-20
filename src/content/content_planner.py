@@ -56,7 +56,7 @@ def run_planner():
     _debug_log("H5", "content_planner.py:35", "character_profile_loaded", {"char_dir": char_dir, "keys": list(character_profile.keys()) if isinstance(character_profile, dict) else []})
 
     store = PlanStore(char_dir)
-    generator = PlanGenerator(api_key)
+    generator = PlanGenerator(api_key, store)
 
     try:
         existing_plans = store.load_all_plans()
