@@ -36,9 +36,12 @@ if __name__ == "__main__":
 
     try:
         if is_test:
-            # Example: run_executor("some_plan.json", dry_run=True)
-            # You would need to specify the plan file as an argument
-            print("Test run mode enabled.")
+            # Usage: python run_planner.py --test [filename]
+            # Defaults to test_plan.json if no filename provided
+            idx = sys.argv.index("--test")
+            filename = sys.argv[idx + 1] if (len(sys.argv) > idx + 1 and not sys.argv[idx + 1].startswith("--")) else "test_plan.json"
+            print(f"Test run mode enabled for: {filename}")
+            run_executor(filename, dry_run=True)
         else:
             run_content_planner()
         _debug_log("H5", "run_planner.py:34", "delegated_run_completed", {"module": "src.content.content_planner"})
