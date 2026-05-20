@@ -68,6 +68,8 @@ class AgentOrchestrator:
                                 print("New plan generated and saved as draft.")
                             except Exception as e:
                                 print(f"Error generating plan: {e}")
+                        else:
+                            print("Plans exist, but none are 'confirmed'. Waiting for manual confirmation...")
             except Exception as e:
                 print(f"Unexpected error in loop: {e}")
                 time.sleep(300) # Wait longer if something goes wrong
