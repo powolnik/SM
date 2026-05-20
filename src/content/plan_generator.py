@@ -22,8 +22,8 @@ def _validate_plan_schema(plan):
         raise ValueError("plan.series_title must be a non-empty string.")
     if not isinstance(plan["target_audience"], str) or not plan["target_audience"].strip():
         raise ValueError("plan.target_audience must be a non-empty string.")
-    if plan["execution_status"] not in ["draft", "ready", "in_progress", "completed"]:
-        raise ValueError("plan.execution_status must be one of: draft, ready, in_progress, completed.")
+    if plan["execution_status"] not in ["draft", "confirmed", "in_progress", "completed"]:
+        raise ValueError("plan.execution_status must be one of: draft, confirmed, in_progress, completed.")
 
     posts = plan["posts"]
     if not isinstance(posts, list):

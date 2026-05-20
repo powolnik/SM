@@ -55,7 +55,7 @@ class PlanStore:
         return file_path
 
     def get_plan_counts(self):
-        counts = {"pending": 0, "in_progress": 0, "completed": 0, "draft": 0, "ready": 0}
+        counts = {"pending": 0, "in_progress": 0, "completed": 0, "draft": 0, "confirmed": 0}
         for filename in os.listdir(self.plans_dir):
             if filename.endswith(".json"):
                 plan = self.load_plan(filename)

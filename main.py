@@ -35,14 +35,14 @@ class AgentOrchestrator:
             in_progress = self.plan_store.get_plans_by_status("in_progress")
             
             if not in_progress:
-                # 2. Check for ready plans
-                ready_plans = self.plan_store.get_plans_by_status("ready")
-                if ready_plans:
-                    filename = list(ready_plans.keys())[0]
+                # 2. Check for confirmed plans
+                confirmed_plans = self.plan_store.get_plans_by_status("confirmed")
+                if confirmed_plans:
+                    filename = list(confirmed_plans.keys())[0]
                     print(f"Executing plan: {filename}")
                     self.executor.execute_plan(filename, dry_run=DRY_RUN)
                 else:
-                    # 3. If no plans ready, check if we need to generate one
+                    # 3. If no plans confirmed, check if we need to generate one
                     all_plans = self.plan_store.load_all_plans()
                     if not all_plans:
                         print("No plans found. Generating new plan...")

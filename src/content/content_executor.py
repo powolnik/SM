@@ -26,6 +26,6 @@ class ContentExecutor:
                     self.ig.close()
             self.plan_store.update_plan_status(filename, "completed")
         except Exception as e:
-            # Revert to 'ready' or 'draft' so it can be retried
-            self.plan_store.update_plan_status(filename, "ready")
+            # Revert to 'confirmed' or 'draft' so it can be retried
+            self.plan_store.update_plan_status(filename, "confirmed")
             raise e
