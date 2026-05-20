@@ -35,6 +35,13 @@ class PlanStore:
                     continue
         return plans
 
+    def get_plans_by_status(self, status):
+        all_plans = self.load_all_plans()
+        return {
+            filename: plan for filename, plan in all_plans.items() 
+            if plan.get("execution_status") == status
+        }
+
     def load_plan(self, filename):
         path = os.path.join(self.plans_dir, filename)
         with open(path, 'r', encoding='utf-8') as f:
