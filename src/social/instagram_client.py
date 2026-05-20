@@ -2,10 +2,11 @@ import os
 from playwright.sync_api import sync_playwright
 from playwright_stealth import stealth_sync
 from dotenv import load_dotenv
+from src.social.base_client import BaseSocialClient
 
 load_dotenv()
 
-class InstagramClient:
+class InstagramClient(BaseSocialClient):
     def __init__(self, user_data_dir="browser_data"):
         self.user_data_dir = user_data_dir
         self.username = os.getenv("IG_USERNAME")
@@ -25,7 +26,6 @@ class InstagramClient:
         
         page.goto("https://www.instagram.com/")
         
-        # Check if we are logged in by looking for the Home icon
         if not page.locator('svg[aria-label="Home"]').is_visible(timeout=5000):
             self._perform_login(page)
             
@@ -39,19 +39,20 @@ class InstagramClient:
         page.fill('input[name="password"]', self.password)
         page.click('button[type="submit"]')
         
-        # Wait for user to handle 2FA or security challenges
         print("Please complete any 2FA or security challenges in the browser.")
         page.wait_for_selector('svg[aria-label="Home"]', timeout=120000)
 
-    def post_content(self, page, content_text):
-        # Logic to navigate to create post and input text
-        page.goto("https://www.instagram.com/create/style/")
-        # Add specific selectors for your UI automation here
-        page.wait_for_selector('textarea')
-        page.fill('textarea', content_text)
-        page.click('button:has-text("Share")')
+    def post_content(self, content_text, media_path=None):
+        browser, page = self.get_authenticated_page()
+        try:
+            page.goto("https://www.instagram.com/create/style/")
+            page.wait_for_selector('textarea')
+            page.fill('textarea', content_text)
+            page.click('button:has-text("Share")')
+        finally:
+            browser.close()
+            self.close()
 
     def close(self):
-        """Call this to clean up resources."""
         if self._playwright:
             self._playwright.stop()
