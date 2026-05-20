@@ -75,14 +75,14 @@ def run_planner():
         raise
 
 
-def run_executor(plan_filename):
+def run_executor(plan_filename, dry_run=False):
     load_dotenv(override=True)
 
     char_dir = _get_char_dir()
     store = PlanStore(char_dir)
     ig = InstagramClient()
     executor = ContentExecutor(store, ig)
-    executor.execute_plan(plan_filename)
+    executor.execute_plan(plan_filename, dry_run=dry_run)
 
 
 if __name__ == "__main__":

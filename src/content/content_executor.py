@@ -3,21 +3,29 @@ class ContentExecutor:
         self.plan_store = plan_store
         self.ig = instagram_client
 
-    def execute_plan(self, filename):
+    def execute_plan(self, filename, dry_run=False):
         self.plan_store.update_plan_status(filename, "in_progress")
         try:
             plan = self.plan_store.load_plan(filename)
-            browser, page = self.ig.get_authenticated_page()
-            try:
-                # Changed 'steps' to 'posts' to match PlanGenerator output
+            if dry_run:
+                print(f"--- DRY RUN: Executing {filename} ---")
                 for post in plan.get("posts", []):
-                    # Assuming content is in the 'caption' field for now
                     content = post.get("caption")
                     if content:
-                        self.ig.post_content(page, content)
-            finally:
-                browser.close()
-                self.ig.close()
+                        print(f"Would post: {content}")
+                print("--- DRY RUN COMPLETE ---")
+            else:
+                browser, page = self.ig.get_authenticated_page()
+                try:
+                    # Changed 'steps' to 'posts' to match PlanGenerator output
+                    for post in plan.get("posts", []):
+                        # Assuming content is in the 'caption' field for now
+                        content = post.get("caption")
+                        if content:
+                            self.ig.post_content(page, content)
+                finally:
+                    browser.close()
+                    self.ig.close()
             self.plan_store.update_plan_status(filename, "completed")
         except Exception as e:
             self.plan_store.update_plan_status(filename, "pending")
