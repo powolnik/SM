@@ -44,8 +44,12 @@ class PlanStore:
 
     def load_plan(self, filename):
         path = os.path.join(self.plans_dir, filename)
-        with open(path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, IOError) as e:
+            _debug_log("system", "load_plan", f"Corrupted file: {filename}", str(e))
+            return None
 
     def save_plan(self, plan):
         safe_title = "".join(c if c.isalnum() else "_" for c in plan.get("series_title", "plan")).strip("_")
@@ -59,13 +63,15 @@ class PlanStore:
         for filename in os.listdir(self.plans_dir):
             if filename.endswith(".json"):
                 plan = self.load_plan(filename)
-                status = plan.get("execution_status", "pending")
-                counts[status] = counts.get(status, 0) + 1
+                if plan:
+                    status = plan.get("execution_status", "pending")
+                    counts[status] = counts.get(status, 0) + 1
         return counts
 
     def update_plan_status(self, filename, status):
         path = os.path.join(self.plans_dir, filename)
         plan = self.load_plan(filename)
-        plan["execution_status"] = status
-        with open(path, "w", encoding='utf-8') as f:
-            json.dump(plan, f, indent=2, ensure_ascii=False)
+        if plan:
+            plan["execution_status"] = status
+            with open(path, "w", encoding='utf-8') as f:
+                json.dump(plan, f, indent=2, ensure_ascii=False)
