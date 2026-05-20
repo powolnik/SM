@@ -1,6 +1,7 @@
 import json
 import time
 from openai import OpenAI
+from src.utils.logger import debug_log
 
 
 def _word_count(text):
@@ -110,20 +111,6 @@ def _validate_plan_schema(plan):
         for key in required_technical_keys:
             if not isinstance(technical[key], str) or not technical[key].strip():
                 raise ValueError(f"{post_path}.image_prompt.technical.{key} must be a non-empty string.")
-
-
-def _debug_log(hypothesis_id, location, message, data):
-    payload = {
-        "sessionId": "95411c",
-        "runId": "pre-fix",
-        "hypothesisId": hypothesis_id,
-        "location": location,
-        "message": message,
-        "data": data,
-        "timestamp": int(time.time() * 1000),
-    }
-    with open("debug-95411c.log", "a", encoding="utf-8") as _f:
-        _f.write(json.dumps(payload, ensure_ascii=False) + "\n")
 
 
 class PlanGenerator:

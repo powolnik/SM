@@ -1,20 +1,7 @@
 import os
 import json
 import time
-
-
-def _debug_log(hypothesis_id, location, message, data):
-    payload = {
-        "sessionId": "95411c",
-        "runId": "pre-fix",
-        "hypothesisId": hypothesis_id,
-        "location": location,
-        "message": message,
-        "data": data,
-        "timestamp": int(time.time() * 1000),
-    }
-    with open("debug-95411c.log", "a", encoding="utf-8") as _f:
-        _f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+from src.utils.logger import debug_log
 
 
 class PlanStore:
@@ -48,7 +35,7 @@ class PlanStore:
             with open(path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except (json.JSONDecodeError, IOError) as e:
-            _debug_log("system", "load_plan", f"Corrupted file: {filename}", str(e))
+            debug_log("system", "load_plan", f"Corrupted file: {filename}", str(e))
             return None
 
     def save_plan(self, plan):
