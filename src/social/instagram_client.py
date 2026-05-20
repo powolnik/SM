@@ -42,7 +42,15 @@ class InstagramClient:
         # Wait for user to handle 2FA or security challenges
         print("Please complete any 2FA or security challenges in the browser.")
         page.wait_for_selector('svg[aria-label="Home"]', timeout=120000)
-        
+
+    def post_content(self, page, content_text):
+        # Logic to navigate to create post and input text
+        page.goto("https://www.instagram.com/create/style/")
+        # Add specific selectors for your UI automation here
+        page.wait_for_selector('textarea')
+        page.fill('textarea', content_text)
+        page.click('button:has-text("Share")')
+
     def close(self):
         """Call this to clean up resources."""
         if self._playwright:

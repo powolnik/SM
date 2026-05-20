@@ -1,5 +1,22 @@
 import os
 import json
+import time
+
+
+def _debug_log(hypothesis_id, location, message, data):
+    # #region agent log
+    payload = {
+        "sessionId": "95411c",
+        "runId": "pre-fix",
+        "hypothesisId": hypothesis_id,
+        "location": location,
+        "message": message,
+        "data": data,
+        "timestamp": int(time.time() * 1000),
+    }
+    with open("debug-95411c.log", "a", encoding="utf-8") as _f:
+        _f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    # #endregion
 
 class PlanStore:
     def __init__(self, character_dir):
@@ -19,9 +36,15 @@ class PlanStore:
                     continue
         return plans
 
+    def load_plan(self, filename):
+        path = os.path.join(self.plans_dir, filename)
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+
     def save_plan(self, plan):
         safe_title = "".join(c if c.isalnum() else "_" for c in plan.get("series_title", "plan")).strip("_")
         file_path = os.path.join(self.plans_dir, f"{safe_title or 'plan'}.json")
+        _debug_log("H4", "plan_store.py:38", "save_path_resolved", {"series_title": plan.get("series_title"), "safe_title": safe_title, "file_path": file_path, "already_exists": os.path.exists(file_path)})
         with open(file_path, "w", encoding='utf-8') as f:
             json.dump(plan, f, indent=2, ensure_ascii=False)
         return file_path
